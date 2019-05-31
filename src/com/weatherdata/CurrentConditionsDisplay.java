@@ -1,27 +1,35 @@
 package com.weatherdata;
 
-public class CurrentConditionsDisplay implements  Observer, DisplayElement {
+import java.util.Observable;
+import java.util.Observer;
+
+public class CurrentConditionsDisplay implements Observer, DisplayElement {
 
     private float temperature;
     private float humidity;
-    private Subject weatherData;
+    private Observable observable;
 
-    public CurrentConditionsDisplay(Subject subject) {
-        this.weatherData = subject;
-        subject.registerObserver(this);
+    public CurrentConditionsDisplay(Observable observable) {
+        this.observable = observable;
+        observable.addObserver(this);
     }
 
     @Override
-    public void update(float temp, float humidity, float pressure) {
-        this.temperature = temp;
-        this.humidity = humidity;
+    public void update(Observable observable, Object object) {
 
-        display();
+        if (observable instanceof WeatherData) {
+
+            WeatherData weatherData = (WeatherData)observable;
+            this.temperature = weatherData.getTemperature();
+            this.humidity = weatherData.getHumidity();
+
+            display();
+        }
     }
 
     @Override
     public void display() {
-        System.out.println("Current conditions: " + temperature  + "F degrees and " + humidity + "% humidity");
+        System.out.println("Current Conditions: " + temperature  + "F degrees and " + humidity + "% humidity");
     }
 }
 

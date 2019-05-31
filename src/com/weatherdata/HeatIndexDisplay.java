@@ -1,14 +1,17 @@
 package com.weatherdata;
 
-public class HeatIndexDisplay implements Observer, DisplayElement{
+import java.util.Observable;
+import java.util.Observer;
+
+public class HeatIndexDisplay implements Observer, DisplayElement {
 
     private float temperature;
     private float humidity;
-    private Subject weatherData;
+    private Observable weatherData;
 
-    public HeatIndexDisplay(Subject subject) {
-        this.weatherData = subject;
-        subject.registerObserver(this);
+    public HeatIndexDisplay(Observable observable) {
+        this.weatherData = observable;
+        observable.addObserver(this);
     }
 
     private float computeHeatIndex(float t, float rh) {
@@ -29,10 +32,16 @@ public class HeatIndexDisplay implements Observer, DisplayElement{
     }
 
     @Override
-    public void update(float temp, float humidity, float pressure) {
-        this.temperature = temp;
-        this.humidity = humidity;
+    public void update(Observable observable, Object object) {
 
-        display();
+        if (observable instanceof WeatherData) {
+
+            WeatherData weatherData = (WeatherData) observable;
+            this.temperature = weatherData.getTemperature();
+            this.humidity = weatherData.getHumidity();
+
+            display();
+
+        }
     }
 }
